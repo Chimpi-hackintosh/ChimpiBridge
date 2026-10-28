@@ -94,6 +94,7 @@ def build(argv=None) -> int:
     release_dir.mkdir(exist_ok=True)
     subprocess.run([sys.executable, "-m", "PyInstaller", "--noconfirm", "--clean", "--onedir",
                     "--windowed", "--contents-directory", "lib", "--name", "ChimpiBridge",
+                    "--hidden-import", "PySide6.QtSvg",
                     "--icon", str(ROOT / "assets" / "mark.ico"), "--distpath", str(ROOT / "dist"),
                     "--workpath", str(build_dir / "pyinstaller"), "--specpath", str(build_dir),
                     str(ROOT / "main.py")], cwd=ROOT, check=True)
