@@ -2,8 +2,12 @@
 
 Gerenciador desktop de conexão e modos Android, escrito em **Python + PySide6**
 
-Primeira versão para desenvolvimento, com pacote Windows x64 preparado por **PyInstaller + NSIS**
-Este repositório contém o código-fonte e os scripts de build — o EXE Windows ainda precisa ser gerado
+**O setup oficial para Windows é preparado e publicado por Chimpi-hackintosh, mantenedor do projeto**
+
+Os usuários baixam e instalam o setup pronto disponibilizado pelo mantenedor nas [Releases](https://github.com/Chimpi-hackintosh/ChimpiBridge/releases)
+A preparação do executável e do instalador fica a cargo de Chimpi-hackintosh
+
+Este repositório também reúne o código-fonte e as ferramentas usadas no desenvolvimento
 
 ## O que está implementado
 
@@ -17,7 +21,32 @@ Este repositório contém o código-fonte e os scripts de build — o EXE Window
 - Guia de conexão, seleção do ADB e links oficiais de download e drivers
 - Operações em segundo plano, sem executar comandos pelo shell do computador
 
-## Comece pelo Windows
+## Instalação e uso no Windows
+
+**Quem prepara o setup: Chimpi-hackintosh**
+
+1. Acesse as [Releases do ChimpiBridge](https://github.com/Chimpi-hackintosh/ChimpiBridge/releases)
+2. Quando o setup oficial estiver disponível, baixe a versão publicada por Chimpi-hackintosh
+3. Execute o instalador e abra o ChimpiBridge pelo atalho criado
+4. Conecte o Android com um cabo USB de dados
+5. Ative a depuração USB no celular e autorize a conexão com o computador
+6. Selecione o aparelho no aplicativo e escolha **Entrar no Recovery** ou **Reiniciar Android**
+
+O setup oficial deve entregar o aplicativo com o runtime Python, as bibliotecas e as ferramentas ADB incluídos
+Para usar essa distribuição pronta, o usuário instala o setup e segue o guia de conexão do aplicativo
+Os drivers USB do fabricante podem ser necessários para o computador reconhecer o aparelho
+
+## Área do mantenedor
+
+A compilação, o empacotamento, os testes da distribuição e a publicação do setup oficial são realizados por **Chimpi-hackintosh**
+Os scripts de desenvolvimento e build abaixo servem à preparação dessas versões pelo mantenedor
+
+<details>
+<summary>Instruções de desenvolvimento e empacotamento para o mantenedor</summary>
+
+### Executar o código-fonte para desenvolvimento
+
+As instruções desta área são para o mantenedor preparar e testar as versões
 
 1. Instale **Python 3.12 x64**, incluindo o Python Launcher (`py`)
 2. Extraia este projeto para uma pasta comum do seu usuário
@@ -40,7 +69,7 @@ py -3.12 -m venv .venv
 .venv\Scripts\python.exe main.py
 ```
 
-## Gerar o aplicativo e o instalador
+### Preparar o executável e o setup oficial
 
 O build precisa rodar em **Windows x64**, usando Python x64
 O destino previsto é Windows 10 versão 1809 ou posterior / Windows 11
@@ -81,6 +110,8 @@ Configurações e histórico ficam em `%LOCALAPPDATA%\SnoopyOS Company\ChimpiBri
 Atualizações e desinstalação preservam essa pasta
 O desinstalador remove somente os arquivos listados no staging e diretórios que estiverem vazios
 
+</details>
+
 ## O que a confirmação significa
 
 Enviar um comando com sucesso produz **Solicitação enviada**, seguido de acompanhamento
@@ -107,9 +138,9 @@ Download Mode Samsung e Fastboot não são confirmados por uma listagem ADB
 Eles exigem adaptadores específicos; não há controles desses modos nesta versão
 O iPhone também precisa de integração própria, com protocolos diferentes do ADB
 
-## Testes
+## Testes de desenvolvimento
 
-Com as dependências instaladas:
+Para o mantenedor, com as dependências instaladas:
 
 ```bat
 .venv\Scripts\python.exe -m unittest discover -s tests -v
