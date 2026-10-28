@@ -75,7 +75,7 @@ def run_process(argv: list[str], timeout: float) -> Result:
         raise BridgeError("error.execute", str(exc)) from exc
 
 
-def resolve_adb(configured: str, root: Path) -> Path:
+def resolve_adb(configured: str, root: Path, managed: Path | None = None) -> Path:
     if configured:
         path = Path(configured).expanduser()
         if not path.is_file():
@@ -83,8 +83,13 @@ def resolve_adb(configured: str, root: Path) -> Path:
         return path.resolve()
     name = "adb.exe" if sys.platform == "win32" else "adb"
     bundled = root / "tools" / "platform-tools" / name
-    if bundled.is_file():
+    bundled_complete = (bundled.is_file() and (sys.platform != "win32" or all(
+        (bundled.parent / dll).is_file() for dll in ("AdbWinApi.dll", "AdbWinUsbApi.dll"))))
+    if bundled_complete:
         return bundled
+    if managed and managed.is_file() and (sys.platform != "win32" or all(
+            (managed.parent / dll).is_file() for dll in ("AdbWinApi.dll", "AdbWinUsbApi.dll"))):
+        return managed
     found = shutil.which(name)
     if found:
         return Path(found).resolve()

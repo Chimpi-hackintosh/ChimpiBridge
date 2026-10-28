@@ -122,6 +122,16 @@ class AdbTests(unittest.TestCase):
                 run_process(["adb", "reboot"], 1)
         self.assertEqual(raised.exception.code, "error.timeout")
 
+    def test_windows_adb_uses_no_console_or_powershell(self):
+        completed = subprocess.CompletedProcess([], 0, "ok", "")
+        with patch("subprocess.CREATE_NO_WINDOW", 0x08000000, create=True), patch(
+                "chimpibridge.adb.sys.platform", "win32"), patch(
+                "subprocess.run", return_value=completed) as execute:
+            run_process(["adb.exe", "-s", "selected", "reboot", "recovery"], 12)
+        self.assertEqual(execute.call_args.args[0], ["adb.exe", "-s", "selected", "reboot", "recovery"])
+        self.assertFalse(execute.call_args.kwargs["shell"])
+        self.assertEqual(execute.call_args.kwargs["creationflags"], 0x08000000)
+
 
 class TransitionTests(unittest.TestCase):
     def pending(self, target=Target.RECOVERY, mode="adb"):

@@ -1,4 +1,4 @@
-# ChimpiBridge 0.1.0
+# ChimpiBridge 0.1.1
 
 Gerenciador desktop de conexão e modos Android, escrito em **Python + PySide6**
 
@@ -18,13 +18,14 @@ Este repositório também reúne o código-fonte e as ferramentas usadas no dese
 - Acompanhamento da reconexão por até 90 segundos, com confirmação baseada no aparelho selecionado
 - Histórico local, exportação para texto e preferências persistentes
 - Interface em português e inglês, com idioma de exibição do Windows e opção de troca manual
-- Guia de conexão, seleção do ADB e links oficiais de download e drivers
+- Preparação automática do ADB oficial no Windows quando a ferramenta está ausente, com SHA-256 e cache local
+- Guia de conexão, seleção avançada do ADB e links oficiais para drivers
 - Operações em segundo plano, sem executar comandos pelo shell do computador
 
 ## Usar o EXE pronto no Windows
 
 1. Acesse as [Releases do ChimpiBridge](https://github.com/Chimpi-hackintosh/ChimpiBridge/releases)
-2. Baixe **ChimpiBridge-0.1.0-windows-x64-portable.zip**
+2. Baixe **ChimpiBridge-0.1.1-windows-x64-portable.zip**
 3. Extraia a pasta inteira do ZIP
 4. Abra **ChimpiBridge.exe** dentro da pasta extraída
 5. Conecte o Android com um cabo USB de dados e autorize a depuração USB no celular
@@ -37,6 +38,29 @@ Os drivers USB do fabricante podem ser necessários para reconhecer o celular
 
 **O setup instalável é preparado separadamente por Chimpi-hackintosh**
 O mantenedor pode usar a pasta completa da distribuição portátil como origem do seu instalador
+
+## ADB em segundo plano
+
+O pacote portátil já inclui o ADB completo
+Se a ferramenta estiver ausente no Windows, o aplicativo baixa o **SDK Platform-Tools 37.0.1** diretamente do Google, verifica o SHA-256 antes de executar qualquer arquivo e extrai o pacote para a pasta de dados do usuário
+Não é preciso abrir PowerShell, digitar comandos, alterar o PATH ou executar o aplicativo como administrador
+
+A detecção usa `adb devices -l`
+Um único aparelho é selecionado automaticamente; com vários aparelhos, escolha o destino na lista
+Ao clicar em **Entrar no Recovery**, o aplicativo executa internamente:
+
+```text
+adb -s SERIAL reboot recovery
+```
+
+O processo é iniciado sem janela de console, usando o serial selecionado
+A autorização da depuração USB continua sendo aceita na tela do Android
+O aplicativo acompanha a reconexão e só confirma o Recovery quando observa esse modo no mesmo aparelho
+
+A ferramenta baixada fica em `%LOCALAPPDATA%\SnoopyOS Company\ChimpiBridge\tools\platform-tools-37.0.1\platform-tools`
+Ela é reutilizada nas próximas aberturas
+Se a internet falhar, o aplicativo mostra o erro e oferece **Preparar ADB** para tentar novamente, sem repetir downloads em loop
+Uma ferramenta escolhida manualmente mantém precedência sobre a preparação automática
 
 ## Área do mantenedor
 
@@ -54,10 +78,11 @@ As instruções desta área são para o mantenedor preparar e testar as versões
 1. Instale **Python 3.12 x64**, incluindo o Python Launcher (`py`)
 2. Extraia este projeto para uma pasta comum do seu usuário
 3. Abra **run_windows.cmd** — ele cria um ambiente virtual, instala a dependência e abre a interface
-4. Use **Baixar Platform-Tools** para abrir a página oficial do Android e baixe o ZIP para Windows
-5. Extraia o ZIP inteiro e use **Escolher ADB** para selecionar `adb.exe` dentro da pasta extraída
-6. Ative a depuração USB no Android, conecte um cabo de dados e aceite a autorização na tela do aparelho
-7. Selecione o celular e use **Entrar no Recovery** ou **Reiniciar Android**
+4. No Windows, aguarde a preparação automática do ADB se nenhuma ferramenta estiver disponível
+5. Ative a depuração USB no Android, conecte um cabo de dados e aceite a autorização na tela do aparelho
+6. Selecione o celular e use **Entrar no Recovery** ou **Reiniciar Android**
+
+**Escolher ADB** permite usar uma instalação própria da ferramenta, quando necessário
 
 Os arquivos DLL que acompanham `adb.exe` precisam permanecer junto dele
 Se a conexão não aparecer, siga a aba **Como conectar** e o link dos drivers do fabricante
@@ -89,8 +114,8 @@ Arquivos gerados após um build bem-sucedido no Windows:
 | Caminho | Conteúdo |
 |---|---|
 | `dist/ChimpiBridge/` | EXE, runtime Python, bibliotecas, ferramentas ADB e recursos separados |
-| `release/ChimpiBridge-0.1.0-windows-x64-portable.zip` | Pacote portátil completo — distribua a pasta inteira |
-| `release/ChimpiBridge-0.1.0-windows-x64-setup.exe` | Instalador NSIS com desinstalação e atalhos |
+| `release/ChimpiBridge-0.1.1-windows-x64-portable.zip` | Pacote portátil completo — distribua a pasta inteira |
+| `release/ChimpiBridge-0.1.1-windows-x64-setup.exe` | Instalador NSIS com desinstalação e atalhos |
 
 Para usar uma pasta Platform-Tools já existente:
 
@@ -159,6 +184,7 @@ Veja **VALIDACAO.md** para os resultados e as verificações Windows que ainda d
 |---|---|
 | `main.py` | Inicialização do aplicativo |
 | `chimpibridge/adb.py` | Execução do ADB, leitura de estados e confirmação de transições |
+| `chimpibridge/provision.py` | Download oficial verificado e cache do ADB no perfil do usuário |
 | `chimpibridge/ui.py` | Interface e coordenação de trabalhos em segundo plano |
 | `chimpibridge/storage.py` | Recursos externos, preferências e histórico |
 | `chimpibridge/i18n.py` | Idioma automático, override e fallback |

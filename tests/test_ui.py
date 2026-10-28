@@ -5,6 +5,7 @@ os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 import tempfile
 import time
 import unittest
+from unittest.mock import Mock, patch
 from pathlib import Path
 
 from PySide6.QtTest import QTest
@@ -13,6 +14,7 @@ from PySide6.QtWidgets import QApplication
 from chimpibridge.adb import BridgeError, Device, Observation, RebootReceipt, Target
 from chimpibridge.storage import Store
 from chimpibridge.ui import Window
+from chimpibridge.provision import cached_adb, REQUIRED
 
 ROOT = Path(__file__).resolve().parent.parent
 APP = QApplication.instance() or QApplication([])
@@ -129,6 +131,52 @@ class InterfaceTests(unittest.TestCase):
         self.window.stop_waiting()
         self.assertIsNone(self.window.transition)
         self.assertEqual(len(self.client.calls), 1)
+
+    def prepare_missing_tool(self, installer):
+        self.window.close()
+        self.window.deleteLater()
+        APP.processEvents()
+        store = Store(Path(self.temp.name) / "automatic", ROOT)
+        store.settings.update({"language": "pt-BR", "adb_path": ""})
+        with patch("chimpibridge.i18n.display_languages", return_value=["pt-BR"]):
+            self.window = Window(store, client_factory=lambda _: self.client,
+                                 tool_installer=installer, auto_scan=False)
+        self.window.show()
+
+    def test_missing_adb_is_prepared_in_background_without_rebooting_phone(self):
+        def install(root):
+            path = cached_adb(root)
+            path.parent.mkdir(parents=True)
+            for name in REQUIRED:
+                (path.parent / name).write_bytes(b"stub")
+            return path
+        installer = Mock(side_effect=install)
+        with patch("chimpibridge.ui.sys.platform", "win32"), patch("shutil.which", return_value=None):
+            self.prepare_missing_tool(installer)
+            self.window.refresh()
+            self.assertEqual(self.window.operation, "setup")
+            self.assertTrue(self.window.busy)
+            self.wait_idle()
+            self.wait_idle()
+            self.assertIsNotNone(self.window.client)
+            self.assertEqual(len(self.window.devices), 2)
+            self.assertEqual(self.client.calls, [])
+            installer.assert_called_once()
+
+    def test_failed_download_requires_manual_retry_instead_of_a_loop(self):
+        installer = Mock(side_effect=BridgeError("error.adb_download"))
+        with patch("chimpibridge.ui.sys.platform", "win32"), patch("shutil.which", return_value=None):
+            self.prepare_missing_tool(installer)
+            self.window.refresh()
+            self.wait_idle()
+            self.window.refresh()
+            self.wait_idle()
+            installer.assert_called_once()
+            self.assertEqual(self.window.last_notice[0], "error.adb_download")
+            self.assertTrue(self.window.setup_button.isEnabled())
+            self.window.setup_button.click()
+            self.wait_idle()
+            self.assertEqual(installer.call_count, 2)
 
 
 if __name__ == "__main__":

@@ -1,16 +1,22 @@
-# ChimpiBridge 0.1.0 — Windows x64
+# ChimpiBridge 0.1.1 — Windows x64
 
 Primeira versão do gerenciador Android em Python + PySide6
 
 ## Download pronto para usar
 
-Baixe **ChimpiBridge-0.1.0-windows-x64-portable.zip**, extraia a pasta inteira e abra **ChimpiBridge.exe**
+Baixe **ChimpiBridge-0.1.1-windows-x64-portable.zip**, extraia a pasta inteira e abra **ChimpiBridge.exe**
 
 O pacote inclui o executável, o runtime Python, as bibliotecas e as ferramentas ADB
 Mantenha as pastas que acompanham o EXE junto dele
 Não é necessário compilar o projeto nem instalar Python para usar este pacote
 
 O setup instalável é preparado separadamente por **Chimpi-hackintosh**, usando a distribuição pronta
+
+## Novo nesta versão
+
+- Preparação automática do ADB no Windows quando ausente, sem abrir console ou PowerShell
+- Download direto do Google, conferência de SHA-256 antes da execução e reutilização no perfil do usuário
+- Botão para repetir a preparação após falha de rede, sem downloads em loop
 
 ## Funcionalidades
 

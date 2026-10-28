@@ -36,6 +36,9 @@ jobs:
           QT_QPA_PLATFORM: offscreen
         run: python -m unittest discover -s tests -v
 
+      - name: Verify automatic ADB preparation
+        run: python scripts/check_adb_download.py
+
       - name: Build portable Windows package
         shell: pwsh
         run: |

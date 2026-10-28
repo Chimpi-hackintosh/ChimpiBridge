@@ -15,6 +15,7 @@ from PySide6.QtWidgets import (QApplication, QComboBox, QFileDialog, QFrame, QHB
 from . import __version__
 from .adb import AdbClient, BridgeError, Device, Target, Transition, resolve_adb
 from .i18n import I18n
+from .provision import cached_adb, install_platform_tools
 from .storage import Store, app_root
 
 PLATFORM_TOOLS_URL = "https://developer.android.com/tools/releases/platform-tools"
@@ -43,12 +44,15 @@ class Task(QRunnable):
 
 
 class Window(QMainWindow):
-    def __init__(self, store: Store | None = None, client_factory=AdbClient, *, auto_scan: bool = True):
+    def __init__(self, store: Store | None = None, client_factory=AdbClient, *, auto_scan: bool = True,
+                 tool_installer=install_platform_tools):
         super().__init__()
         self.root = app_root()
         self.store = store or Store()
         self.tr = I18n(self.root, self.store.settings["language"])
         self.client_factory = client_factory
+        self.tool_installer = tool_installer
+        self.auto_setup_attempted = False
         self.client = None
         self.devices: list[Device] = []
         self.transition: Transition | None = None
@@ -186,6 +190,8 @@ class Window(QMainWindow):
         tools.addWidget(self.choose_button)
         adb_layout.addLayout(tools)
         links = QHBoxLayout()
+        self.setup_button = self.button("adb.setup", self.setup_adb)
+        links.addWidget(self.setup_button)
         links.addWidget(self.button("adb.download", lambda: self.open_url(PLATFORM_TOOLS_URL)))
         self.test_button = self.button("adb.test", self.test_adb)
         links.addWidget(self.test_button)
@@ -339,15 +345,36 @@ class Window(QMainWindow):
 
     def _resolve_client(self):
         try:
-            path = resolve_adb(self.store.settings["adb_path"], self.root)
+            path = resolve_adb(self.store.settings["adb_path"], self.root, cached_adb(self.store.root))
             self.client = self.client_factory(path)
             self.adb_path.setText(str(path))
             self.adb_path.setToolTip(str(path))
         except BridgeError as exc:
             self.client = None
             self.adb_path.setText(self.store.settings["adb_path"])
-            self.notice(exc.code, error=True)
+            if not (self.auto_setup_attempted and self.last_error and self.operation == "setup"):
+                self.notice(exc.code, error=True)
         self._enabled()
+
+    def setup_adb(self):
+        if self.busy or self.transition or self.client is not None:
+            return
+        self.auto_setup_attempted = True
+        self.notice("notice.adb_setup")
+        self._record("log.adb_setup")
+        self._work("setup", lambda: self.tool_installer(self.store.root), self._setup_done)
+
+    def _setup_done(self, path):
+        self.store.settings["adb_path"] = ""
+        try:
+            self.store.save_settings()
+        except OSError:
+            self.notice("error.storage", error=True)
+        self.client = self.client_factory(path)
+        self.adb_path.setText(str(path))
+        self.adb_path.setToolTip(str(path))
+        self._record("log.adb_ready")
+        self.notice("notice.adb_ok")
 
     def choose_adb(self):
         selected, _ = QFileDialog.getOpenFileName(self, self.tr("settings.adb_title"),
@@ -402,6 +429,8 @@ class Window(QMainWindow):
         self.busy = False
         self.task = None
         self._enabled()
+        if self.operation == "setup" and self.client is not None:
+            QTimer.singleShot(0, self.refresh)
 
     def refresh(self):
         if self.busy:
@@ -409,6 +438,9 @@ class Window(QMainWindow):
         if self.client is None:
             self._resolve_client()
         if self.client is None:
+            if (sys.platform == "win32" and not self.store.settings["adb_path"]
+                    and not self.auto_setup_attempted):
+                self.setup_adb()
             return
         client = self.client
         pending_serial = self.transition.receipt.serial if self.transition else None
@@ -476,11 +508,13 @@ class Window(QMainWindow):
         self.recovery_button.setEnabled(available)
         self.system_button.setEnabled(available)
         self.choose_button.setEnabled(not self.busy and not self.transition)
+        self.setup_button.setEnabled(sys.platform == "win32" and self.client is None
+                                     and not self.busy and not self.transition)
         self.test_button.setEnabled(bool(self.client) and not self.busy and not self.transition)
         self.refresh_button.setEnabled(not self.busy)
         self.device_list.setEnabled(not self.transition and not (self.busy and self.operation == "reboot"))
         self.stop_button.setVisible(bool(self.transition))
-        self.progress.setVisible(bool(self.transition))
+        self.progress.setVisible(bool(self.transition) or (self.busy and self.operation == "setup"))
 
     def request_reboot(self, target):
         device = self.selected()
