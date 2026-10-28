@@ -23,7 +23,9 @@ def api(path: str, method="GET", payload=None):
     if payload is not None:
         command.extend(["--input", "-"])
     result = subprocess.run(command, input=json.dumps(payload) if payload is not None else None,
-                            text=True, capture_output=True, check=True)
+                            text=True, capture_output=True)
+    if result.returncode:
+        raise RuntimeError(f"GitHub {method} {path}: {result.stderr.strip()}")
     return json.loads(result.stdout) if result.stdout.strip() else None
 
 
@@ -77,32 +79,36 @@ def finalize():
         raise RuntimeError("Refusing to replace an unrelated or immutable release")
     old_ref = api(f"{PREFIX}/git/ref/tags/{TAG}")["object"]["sha"]
     backup_tag = f"{TAG}-automation-backup-{previous['id']}"
-    api(f"{PREFIX}/git/refs", "POST", {"ref": f"refs/tags/{backup_tag}", "sha": old_ref})
+    build_source = data["target_commitish"]
+    backup_body = (f"Publicação automática anterior preservada com seus arquivos originais\n\n"
+                   f"Revisão original: https://github.com/{REPO}/commit/{old_ref}\n\n"
+                   + previous.get("body", ""))
     moved = False
     try:
         # Keep the old publication, its exact tag revision and all its assets.
         api(f"{PREFIX}/releases/{previous['id']}", "PATCH", {
             "draft": True, "tag_name": backup_tag, "name": f"Backup da publicação automática {TAG}",
-            "target_commitish": os.environ["GITHUB_SHA"]})
+            "target_commitish": os.environ["GITHUB_SHA"], "body": backup_body})
         moved = True
-        current = api(f"{PREFIX}/git/ref/tags/{TAG}")["object"]["sha"]
-        if current != old_ref:
-            raise RuntimeError("The version tag changed during packaging; refusing to overwrite it")
-        api(f"{PREFIX}/git/refs/tags/{TAG}", "PATCH", {"sha": os.environ["GITHUB_SHA"], "force": True})
         notes = (ROOT / ".github" / "release-notes-windows.md").read_text(encoding="utf-8")
-        notes += f"\nCódigo-fonte deste build: https://github.com/{REPO}/commit/{os.environ['GITHUB_SHA']}\n"
+        notes += f"\nCódigo-fonte dos pacotes: https://github.com/{REPO}/commit/{build_source}\n"
         api(f"{PREFIX}/releases/{RELEASE_ID}", "PATCH", {
             "tag_name": TAG, "target_commitish": os.environ["GITHUB_SHA"],
             "name": f"ChimpiBridge {__version__} — Windows e macOS", "body": notes,
             "draft": True, "prerelease": True})
+        current = api(f"{PREFIX}/git/ref/tags/{TAG}")["object"]["sha"]
+        if current != old_ref:
+            raise RuntimeError("The version tag changed during packaging; refusing to overwrite it")
+        # The previous revision remains reachable in main and in the backup notes.
+        # No extra tag is created for the private draft.
+        api(f"{PREFIX}/git/refs/tags/{TAG}", "PATCH", {"sha": os.environ["GITHUB_SHA"], "force": True})
     except Exception:
         if moved:
             api(f"{PREFIX}/releases/{RELEASE_ID}", "PATCH", {
                 "tag_name": data["tag_name"], "target_commitish": os.environ["GITHUB_SHA"], "draft": True})
-            api(f"{PREFIX}/git/refs/tags/{TAG}", "PATCH", {"sha": old_ref, "force": True})
             api(f"{PREFIX}/releases/{previous['id']}", "PATCH", {
-                "tag_name": TAG, "target_commitish": previous["target_commitish"],
-                "name": previous["name"], "draft": False})
+                "tag_name": TAG, "target_commitish": os.environ["GITHUB_SHA"],
+                "name": previous["name"], "body": previous.get("body", ""), "draft": False})
         raise
     print("Ready for its owner to publish; previous release preserved as a private draft")
 

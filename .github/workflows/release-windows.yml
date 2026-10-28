@@ -7,6 +7,11 @@ on:
         description: Numeric ID of the draft created by Chimpi-hackintosh
         required: true
         default: '427174137'
+      finalize_only:
+        description: Finalize an already built draft without rebuilding packages
+        type: boolean
+        required: false
+        default: false
 
 permissions:
   contents: read
@@ -20,6 +25,7 @@ env:
 
 jobs:
   prepare:
+    if: ${{ !inputs.finalize_only }}
     runs-on: ubuntu-24.04
     permissions:
       contents: write
@@ -102,6 +108,7 @@ jobs:
 
   finalize:
     needs: [windows, macos]
+    if: ${{ always() && (inputs.finalize_only || (needs.windows.result == 'success' && needs.macos.result == 'success')) }}
     runs-on: ubuntu-24.04
     permissions:
       contents: write

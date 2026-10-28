@@ -34,7 +34,8 @@ class ReleaseTests(unittest.TestCase):
             "windows-x64-portable.zip", "windows-x64.exe", "macos-arm64.zip", "macos-x64.zip")]
         names += [n + ".sha256" for n in names.copy()]
         current = {"id": 123, "author": {"login": "Chimpi-hackintosh"}, "draft": True,
-                   "tag_name": "temporary", "assets": [{"name": n, "state": "uploaded", "size": 1} for n in names]}
+                   "tag_name": "temporary", "target_commitish": "build",
+                   "assets": [{"name": n, "state": "uploaded", "size": 1} for n in names]}
         old = {"id": 456, "author": {"login": "github-actions[bot]"}, "draft": False,
                "tag_name": "v0.1.1", "target_commitish": "old", "name": "Previous release"}
         ref = {"sha": "old"}
