@@ -4,8 +4,8 @@ Gerenciador desktop de conexão e modos Android, escrito em **Python + PySide6**
 
 **O setup oficial para Windows é preparado e publicado por Chimpi-hackintosh, mantenedor do projeto**
 
-Os usuários baixam e instalam o setup pronto disponibilizado pelo mantenedor nas [Releases](https://github.com/Chimpi-hackintosh/ChimpiBridge/releases)
-A preparação do executável e do instalador fica a cargo de Chimpi-hackintosh
+O pacote portátil com o EXE pronto está nas [Releases](https://github.com/Chimpi-hackintosh/ChimpiBridge/releases)
+A criação e a publicação do setup instalável ficam com **Chimpi-hackintosh**, a partir desse pacote pronto
 
 Este repositório também reúne o código-fonte e as ferramentas usadas no desenvolvimento
 
@@ -21,25 +21,28 @@ Este repositório também reúne o código-fonte e as ferramentas usadas no dese
 - Guia de conexão, seleção do ADB e links oficiais de download e drivers
 - Operações em segundo plano, sem executar comandos pelo shell do computador
 
-## Instalação e uso no Windows
-
-**Quem prepara o setup: Chimpi-hackintosh**
+## Usar o EXE pronto no Windows
 
 1. Acesse as [Releases do ChimpiBridge](https://github.com/Chimpi-hackintosh/ChimpiBridge/releases)
-2. Quando o setup oficial estiver disponível, baixe a versão publicada por Chimpi-hackintosh
-3. Execute o instalador e abra o ChimpiBridge pelo atalho criado
-4. Conecte o Android com um cabo USB de dados
-5. Ative a depuração USB no celular e autorize a conexão com o computador
-6. Selecione o aparelho no aplicativo e escolha **Entrar no Recovery** ou **Reiniciar Android**
+2. Baixe **ChimpiBridge-0.1.0-windows-x64-portable.zip**
+3. Extraia a pasta inteira do ZIP
+4. Abra **ChimpiBridge.exe** dentro da pasta extraída
+5. Conecte o Android com um cabo USB de dados e autorize a depuração USB no celular
+6. Selecione o aparelho e escolha **Entrar no Recovery** ou **Reiniciar Android**
 
-O setup oficial deve entregar o aplicativo com o runtime Python, as bibliotecas e as ferramentas ADB incluídos
-Para usar essa distribuição pronta, o usuário instala o setup e segue o guia de conexão do aplicativo
-Os drivers USB do fabricante podem ser necessários para o computador reconhecer o aparelho
+O pacote inclui o EXE, o runtime Python, as bibliotecas e as ferramentas ADB
+Mantenha o EXE e todas as pastas que o acompanham juntos
+Para usar essa versão pronta, basta extrair o pacote e abrir o aplicativo
+Os drivers USB do fabricante podem ser necessários para reconhecer o celular
+
+**O setup instalável é preparado separadamente por Chimpi-hackintosh**
+O mantenedor pode usar a pasta completa da distribuição portátil como origem do seu instalador
 
 ## Área do mantenedor
 
-A compilação, o empacotamento, os testes da distribuição e a publicação do setup oficial são realizados por **Chimpi-hackintosh**
-Os scripts de desenvolvimento e build abaixo servem à preparação dessas versões pelo mantenedor
+O workflow de publicação gera e verifica o pacote portátil com o EXE no Windows do GitHub
+**Chimpi-hackintosh cuida da criação e publicação do setup instalável** a partir da pasta pronta
+As instruções abaixo documentam o desenvolvimento e o empacotamento manual, quando necessários
 
 <details>
 <summary>Instruções de desenvolvimento e empacotamento para o mantenedor</summary>
