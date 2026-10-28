@@ -1,36 +1,62 @@
-# Validação — ChimpiBridge 0.1.1
+# Validação — ChimpiBridge 0.1.1 para Windows e macOS
 
 Data: 28/10/2026
 
-## Preparação automática do ADB
+A Release pública foi criada e publicada pela conta **Chimpi-hackintosh**
+O campo nativo de publicador do GitHub foi conferido, além do título e dos créditos
 
-- 46 testes automatizados aprovados em Linux com Python 3.12.14 e PySide6 6.12.0
-- Download ausente, reutilização do cache, hash inválido, tamanho inválido, extração fora da pasta, DLL ausente, falha de rede e preservação do cache anterior cobertos por testes
-- Integração da interface cobre preparação em segundo plano, bloqueio de downloads repetidos após falha, repetição manual e ausência de reinício automático do aparelho
-- A execução Windows é configurada com `CREATE_NO_WINDOW` e `shell=False`, sem abrir PowerShell
-- O arquivo oficial Platform-Tools 37.0.1 para Windows foi baixado do Google e conferido contra tamanho e SHA-1 publicados em `repository2-3.xml` antes de registrar o SHA-256 fixo no aplicativo
-- 46 testes automatizados também aprovados no Windows 2025 x64
-- Download real do Google, SHA-256, extração, execução oculta de `adb version` e reutilização do cache aprovados no Windows
-- EXE 0.1.1 compilado, aberto a partir de outro diretório de trabalho e renderizado em modo offscreen
-- ZIP portátil e arquivo SHA-256 publicados na Release v0.1.1
+[Release publicada com os quatro pacotes](https://github.com/Chimpi-hackintosh/ChimpiBridge/releases/tag/v0.1.1)
 
-[Execução Windows da versão 0.1.1](https://github.com/Chimpi-hackintosh/ChimpiBridge/actions/runs/40755447730)
+## Pacotes e testes reais
 
-[Pacote Windows pronto](https://github.com/Chimpi-hackintosh/ChimpiBridge/releases/tag/v0.1.1)
+| Sistema | Testes automatizados | Execução do aplicativo compilado |
+|---|---|---|
+| Windows 2025 x64 | 50 aprovados | EXE da pasta portátil e EXE independente abertos e renderizados |
+| macOS 15 Apple Silicon | 50 aprovados | App aberto antes e depois de extrair o ZIP |
+| macOS 15 Intel | 50 aprovados | App aberto antes e depois de extrair o ZIP |
 
-## Versão Windows anterior
+[Job Windows aprovado](https://github.com/Chimpi-hackintosh/ChimpiBridge/actions/runs/40768442381/job/123098898548)
 
-A versão 0.1.0 foi compilada, passou em 33 testes no Windows e teve seu EXE aberto/renderizado em modo offscreen
+[Job macOS Apple Silicon aprovado](https://github.com/Chimpi-hackintosh/ChimpiBridge/actions/runs/40768442381/job/123098898579)
 
-[Execução Windows anterior](https://github.com/Chimpi-hackintosh/ChimpiBridge/actions/runs/40747432139)
+[Job macOS Intel aprovado](https://github.com/Chimpi-hackintosh/ChimpiBridge/actions/runs/40768442381/job/123098898587)
 
-## Verificação em hardware ainda pendente
+[Preparação final da publicação aprovada](https://github.com/Chimpi-hackintosh/ChimpiBridge/actions/runs/40769473552)
 
-- Comunicação USB e troca de modos em celulares reais
-- Recovery de fábrica e/ou TWRP nos modelos utilizados
-- Execução em Windows de teste sem Python previamente instalado
-- Instalação, atualização e desinstalação do setup preparado pelo mantenedor
+Os pacotes foram compilados a partir da revisão `d49e25db0004e604097ed92ccfa35d13de41547f`
+A tag inclui também o ajuste posterior do fluxo de publicação, sem alteração do código do aplicativo
 
-Os testes de aparelho usam adaptadores simulados
-O setup instalável permanece a cargo de Chimpi-hackintosh, a partir da distribuição pronta
-Download Mode, Fastboot e iPhone continuam planejados
+## Integridade dos anexos
+
+| Pacote | Bytes | SHA-256 |
+|---|---:|---|
+| ChimpiBridge-0.1.1-windows-x64-portable.zip | 49467214 | 5c6c824bc2aa7a2a2a66cea32677e6e5dc2894d0cc547679523217154232c4eb |
+| ChimpiBridge-0.1.1-windows-x64.exe | 41349396 | a8afccbcb39701c2290443fec9ddbdfaec3fa05df67ef041d1f3436407f292ff |
+| ChimpiBridge-0.1.1-macos-arm64.zip | 44660242 | 6d933338e478f78a6513da4c6767cb06c5c6a885adc882f31278bda541fe8344 |
+| ChimpiBridge-0.1.1-macos-x64.zip | 47217493 | 7aa81f69ebd3ad6de4d16c1dc8a767c8bb07c67d8df46cffec9406608db3cf0b |
+
+Cada pacote tem seu arquivo `.sha256` separado na Release
+Os tamanhos e hashes foram conferidos novamente após publicar
+
+## O que foi executado
+
+- Inicialização dos executáveis a partir de outro diretório de trabalho, removendo PYTHONPATH, PYTHONHOME e VIRTUAL_ENV do ambiente de teste
+- Renderização offscreen da janela e do ícone SVG
+- Execução real de `adb version` pela ferramenta incluída nos pacotes completos
+- Download real do Google, SHA-256, extração e execução do ADB dentro do runtime do EXE independente Windows
+- Verificação estrutural das assinaturas ad hoc dos apps macOS, antes e depois de extrair os ZIPs
+- Reabertura dos apps extraídos para conferir permissões, symlinks, recursos e bibliotecas
+- Ausência de fontes `.py` e `.pyw` nas distribuições completas
+- Verificações de autoria da Release e de recuperação da publicação anterior em caso de falha
+
+A versão automática anterior foi preservada como rascunho de backup, com os arquivos originais e a revisão de origem registrados
+Nenhuma publicação anterior precisou ser apagada permanentemente para trocar o publicador
+
+## Limites da verificação
+
+A comunicação USB e a troca de modos em celulares físicos ainda não foram testadas
+Os testes de aparelho utilizam adaptadores simulados
+Um computador limpo de usuário final ainda precisa ser validado fora dos runners
+Os apps macOS exigem macOS 14.4 ou posterior e têm assinatura ad hoc local, sem notarização Apple
+O setup instalável Windows não foi compilado; ele continua a cargo de Chimpi-hackintosh
+Download Mode, Fastboot e o backend iPhone permanecem planejados
