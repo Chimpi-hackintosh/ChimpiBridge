@@ -1,48 +1,49 @@
 # Validação — ChimpiBridge 0.1.0
 
-Data: 27/10/2026
+Data: 28/10/2026
 
-## Executado nesta entrega
+## Build Windows publicado
 
-Ambiente: Linux, Python 3.12.14 e Qt/PySide6 6.12.0
+O pacote portátil com **ChimpiBridge.exe** foi gerado em um runner **Windows 2025 x64**, usando Python 3.12.10
+
+[Execução verificada no GitHub Actions](https://github.com/Chimpi-hackintosh/ChimpiBridge/actions/runs/40747432139)
+
+[Release v0.1.0 com o pacote Windows pronto](https://github.com/Chimpi-hackintosh/ChimpiBridge/releases/tag/v0.1.0)
 
 | Verificação | Resultado |
 |---|---|
-| Testes de núcleo e recursos | 26 aprovados |
-| Testes de integração da interface Qt | 7 aprovados |
-| Total automatizado | **33 aprovados** |
-| Compilação sintática dos arquivos Python | Aprovada |
-| Renderização da interface em português e inglês | Inspecionada em modo offscreen |
-| Janela mínima de 950 × 650 e guia de conexão | Inspecionados, com rolagem para preservar o conteúdo |
+| Testes de núcleo e recursos no Windows | 26 aprovados |
+| Testes de integração da interface Qt no Windows | 7 aprovados |
+| Total de testes automatizados no Windows | **33 aprovados** |
+| Geração do EXE Windows x64 por PyInstaller | Aprovada |
+| Verificação do formato de executável Windows PE | Aprovada |
+| Abertura do EXE compilado a partir de outro diretório de trabalho | Aprovada |
+| Renderização da janela e do ícone SVG em modo offscreen | Aprovada |
+| Localização do ADB incluído no pacote | Aprovada |
+| Publicação do ZIP portátil e do arquivo SHA-256 na Release | Concluída |
 
-Os cenários testados incluem vários aparelhos conectados, autorização revogada, desconexão antes do comando, estado sideload, falha e timeout do ADB, ausência de evidência de boot, seleção explícita por serial e confirmação de Recovery somente no aparelho escolhido
+O pacote publicado é **ChimpiBridge-0.1.0-windows-x64-portable.zip**
+Ele contém o EXE, o runtime Python, as bibliotecas, os recursos, as traduções e as ferramentas ADB
+A pasta inteira deve ser mantida junto do executável
 
-Também foram verificados persistência de preferências e histórico, equivalência das traduções, troca de idioma durante acompanhamento, formatação textual do histórico e geração do manifesto de desinstalação sem remoção recursiva de dados do usuário
+O setup instalável será preparado separadamente por **Chimpi-hackintosh**, a partir dessa distribuição pronta
 
-Os testes de dispositivo e de interface usam adaptadores simulados — não substituem testes em hardware
-A execução literal de argumentos do subprocesso foi verificada com um processo Python real
+## Verificações anteriores
 
-## Ainda depende de Windows e hardware reais
+Os mesmos 33 testes também passaram no ambiente Linux com Python 3.12.14 e Qt/PySide6 6.12.0
+A interface foi inspecionada em português e inglês, incluindo a janela mínima de 950 × 650 com rolagem
 
-- Geração do EXE por PyInstaller no Windows x64
-- Compilação e execução do instalador NSIS
-- Abertura do EXE em Windows sem Python instalado
-- Detecção dos idiomas de exibição pelas APIs do Windows
-- Teste USB em aparelhos reais, com recovery de fábrica e/ou TWRP
-- Instalação, atualização, atalhos e desinstalação com preservação de dados
+Os testes cobrem vários aparelhos, autorização revogada, desconexão, sideload, falhas e timeout do ADB, falta de evidência de boot, seleção por serial, confirmação de modo, persistência, traduções e manifesto de desinstalação
 
-Nenhum EXE Windows foi compilado nesta entrega
-O instalador foi escrito e revisado, mas não foi compilado nem executado neste ambiente
+## Ainda depende de verificação em hardware
 
-## Roteiro prático de verificação no Windows
+- Comunicação USB e troca de modos em celulares reais
+- Recovery de fábrica e/ou TWRP em cada modelo suportado
+- Execução em um Windows de teste sem Python previamente instalado
+- Instalação, atualização, atalhos e desinstalação do setup que o mantenedor preparar
 
-1. Gere o pacote com `build_windows.cmd`, usando a pasta oficial completa do Platform-Tools
-2. Instale em uma máquina de teste e abra o atalho com uma conta comum
-3. Confira português, inglês e o fallback de um idioma não disponível
-4. Conecte dois aparelhos e confirme que é necessário selecionar o alvo
-5. Confira os estados não autorizado e offline antes de autorizar a conexão
-6. Solicite Recovery em um aparelho de teste e observe a tela do celular e o resultado no app
-7. Reinicie para o Android e confira a confirmação de inicialização
-8. Feche e reabra, depois atualize e desinstale, conferindo a preservação das preferências e do histórico
+Os testes de aparelho usam adaptadores simulados
+O teste do EXE verifica inicialização, recursos, renderização e presença do ADB; ele não usa um celular físico
+O instalador NSIS não foi compilado nesta publicação
 
 Download Mode, Fastboot e iPhone permanecem no planejamento das próximas versões
