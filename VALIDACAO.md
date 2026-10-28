@@ -9,7 +9,14 @@ Data: 28/10/2026
 - Integração da interface cobre preparação em segundo plano, bloqueio de downloads repetidos após falha, repetição manual e ausência de reinício automático do aparelho
 - A execução Windows é configurada com `CREATE_NO_WINDOW` e `shell=False`, sem abrir PowerShell
 - O arquivo oficial Platform-Tools 37.0.1 para Windows foi baixado do Google e conferido contra tamanho e SHA-1 publicados em `repository2-3.xml` antes de registrar o SHA-256 fixo no aplicativo
-- A versão 0.1.1 ainda aguarda a execução Windows do workflow para confirmar o download real, compilação e inicialização do novo EXE
+- 46 testes automatizados também aprovados no Windows 2025 x64
+- Download real do Google, SHA-256, extração, execução oculta de `adb version` e reutilização do cache aprovados no Windows
+- EXE 0.1.1 compilado, aberto a partir de outro diretório de trabalho e renderizado em modo offscreen
+- ZIP portátil e arquivo SHA-256 publicados na Release v0.1.1
+
+[Execução Windows da versão 0.1.1](https://github.com/Chimpi-hackintosh/ChimpiBridge/actions/runs/40755447730)
+
+[Pacote Windows pronto](https://github.com/Chimpi-hackintosh/ChimpiBridge/releases/tag/v0.1.1)
 
 ## Versão Windows anterior
 

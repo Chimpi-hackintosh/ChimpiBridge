@@ -154,6 +154,12 @@ Recovery de fábrica, TWRP e outras recuperações oferecem recursos ADB diferen
 O aplicativo abre o recovery instalado, sem instalar uma recuperação nova
 Depuração USB e autorização são necessárias para enviar comandos a um Android iniciado normalmente
 
+## Sintaxe proposta das ações
+
+Os exemplos `from adb action reboot to recovery` e `from cfgutil action=reboot to=recovery ./apple ./action-time=now` descrevem o fluxo desejado do projeto
+A versão atual usa os botões da interface; o interpretador dessa sintaxe e o backend Apple ainda não estão implementados
+Veja [Fluxos de ações Android e Apple](docs/acoes.md) para o mapeamento atual do ADB e os requisitos do cfgutil no macOS
+
 ## Próximas versões
 
 | Etapa | Escopo | Estado |
