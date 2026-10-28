@@ -1,10 +1,14 @@
 # ChimpiBridge 0.1.1
 
+**Autor e mantenedor: [Chimpi-hackintosh](https://github.com/Chimpi-hackintosh)**
+
+**Versão atual: [0.1.1](https://github.com/Chimpi-hackintosh/ChimpiBridge/releases/tag/v0.1.1)**
+
 Gerenciador desktop de conexão e modos Android, escrito em **Python + PySide6**
 
 **O setup oficial para Windows é preparado e publicado por Chimpi-hackintosh, mantenedor do projeto**
 
-O pacote portátil com o EXE pronto está nas [Releases](https://github.com/Chimpi-hackintosh/ChimpiBridge/releases)
+O pacote portátil com o EXE pronto está nas [Releases](https://github.com/Chimpi-hackintosh/ChimpiBridge/releases/tag/v0.1.1)
 A criação e a publicação do setup instalável ficam com **Chimpi-hackintosh**, a partir desse pacote pronto
 
 Este repositório também reúne o código-fonte e as ferramentas usadas no desenvolvimento
@@ -24,7 +28,7 @@ Este repositório também reúne o código-fonte e as ferramentas usadas no dese
 
 ## Usar o EXE pronto no Windows
 
-1. Acesse as [Releases do ChimpiBridge](https://github.com/Chimpi-hackintosh/ChimpiBridge/releases)
+1. Acesse as [Releases do ChimpiBridge](https://github.com/Chimpi-hackintosh/ChimpiBridge/releases/tag/v0.1.1)
 2. Baixe **ChimpiBridge-0.1.1-windows-x64-portable.zip**
 3. Extraia a pasta inteira do ZIP
 4. Abra **ChimpiBridge.exe** dentro da pasta extraída

@@ -1,5 +1,9 @@
 # ChimpiBridge 0.1.1 — Windows x64
 
+**Autor e mantenedor: [Chimpi-hackintosh](https://github.com/Chimpi-hackintosh)**
+
+Versão atual do projeto, substituindo a 0.1.0
+
 Primeira versão do gerenciador Android em Python + PySide6
 
 ## Download pronto para usar

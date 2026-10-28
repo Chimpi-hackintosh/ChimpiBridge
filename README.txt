@@ -1,6 +1,9 @@
-ChimpiBridge 0.1.1 — SnoopyOS Company
+ChimpiBridge 0.1.1 — Chimpi-hackintosh
+SnoopyOS Company
+Copyright (c) 2026 Chimpi-hackintosh
 
 PT-BR
+Autor e mantenedor: Chimpi-hackintosh
 O ADB está incluído; se faltar no Windows, o app baixa e verifica o pacote oficial em segundo plano
 Não é preciso abrir PowerShell ou digitar comandos
 Abra ChimpiBridge.exe ou o atalho do menu Iniciar
@@ -12,6 +15,7 @@ Preferências e histórico são armazenados no seu perfil de usuário
 Download Mode, Fastboot e iPhone estão planejados para próximas versões
 
 EN
+Author and maintainer: Chimpi-hackintosh
 ADB is bundled; if missing on Windows, the app downloads and verifies the official package in the background
 No PowerShell or manual command entry is required
 Open ChimpiBridge.exe or its Start menu shortcut

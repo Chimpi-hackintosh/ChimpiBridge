@@ -20,11 +20,12 @@ OutFile "${OUTPUT}"
 InstallDir "$PROGRAMFILES64\SnoopyOS Company\ChimpiBridge"
 RequestExecutionLevel admin
 SetCompressor /SOLID lzma
-VIProductVersion "0.1.0.0"
+VIProductVersion "0.1.1.0"
 VIAddVersionKey "ProductName" "ChimpiBridge"
 VIAddVersionKey "FileDescription" "ChimpiBridge Setup"
-VIAddVersionKey "FileVersion" "0.1.0"
-VIAddVersionKey "CompanyName" "SnoopyOS Company"
+VIAddVersionKey "FileVersion" "0.1.1"
+VIAddVersionKey "CompanyName" "Chimpi-hackintosh"
+VIAddVersionKey "LegalCopyright" "Copyright (c) 2026 Chimpi-hackintosh"
 !define MUI_ICON "..\assets\mark.ico"
 !define MUI_UNICON "..\assets\mark.ico"
 !define MUI_ABORTWARNING
@@ -86,8 +87,8 @@ Section "!ChimpiBridge" Core
   CreateShortcut "$SMPROGRAMS\ChimpiBridge\ChimpiBridge.lnk" "$INSTDIR\ChimpiBridge.exe"
   WriteRegStr HKLM "Software\SnoopyOS Company\ChimpiBridge" "InstallDir" "$INSTDIR"
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ChimpiBridge" "DisplayName" "ChimpiBridge"
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ChimpiBridge" "DisplayVersion" "0.1.0"
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ChimpiBridge" "Publisher" "SnoopyOS Company"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ChimpiBridge" "DisplayVersion" "0.1.1"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ChimpiBridge" "Publisher" "Chimpi-hackintosh"
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ChimpiBridge" "DisplayIcon" "$INSTDIR\ChimpiBridge.exe"
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ChimpiBridge" "InstallLocation" "$INSTDIR"
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ChimpiBridge" "UninstallString" '$\"$INSTDIR\Uninstall.exe$\"'
