@@ -1,2 +1,3 @@
 """ChimpiBridge — Android connection and mode manager."""
 __version__ = "0.1.1"
+__author__ = "Chimpi-hackintosh"

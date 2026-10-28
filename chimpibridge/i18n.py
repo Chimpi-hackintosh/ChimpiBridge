@@ -21,6 +21,9 @@ def display_languages() -> list[str]:
         except (AttributeError, OSError):
             pass
         return [locale.windows_locale.get(ctypes.windll.kernel32.GetUserDefaultUILanguage(), "en")]
+    if sys.platform == "darwin":
+        from PySide6.QtCore import QLocale
+        return QLocale.system().uiLanguages()
     return [*os.environ.get("LANGUAGE", "").split(":"), locale.getlocale()[0] or "en"]
 
 

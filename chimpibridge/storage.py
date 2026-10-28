@@ -10,7 +10,14 @@ from pathlib import Path
 
 
 def app_root() -> Path:
-    return Path(sys.executable).resolve().parent if getattr(sys, "frozen", False) else Path(__file__).resolve().parent.parent
+    if not getattr(sys, "frozen", False):
+        return Path(__file__).resolve().parent.parent
+    executable_dir = Path(sys.executable).resolve().parent
+    if sys.platform == "darwin":
+        return executable_dir.parent / "Resources"
+    if (executable_dir / "assets" / "style.qss").is_file():
+        return executable_dir
+    return Path(getattr(sys, "_MEIPASS", executable_dir))
 
 
 def user_data_dir() -> Path:
@@ -19,6 +26,8 @@ def user_data_dir() -> Path:
         if ctypes.windll.shell32.SHGetFolderPathW(None, 28, None, 0, buffer) == 0:
             return Path(buffer.value) / "SnoopyOS Company" / "ChimpiBridge"
         base = Path(os.environ.get("LOCALAPPDATA", Path.home() / "AppData" / "Local"))
+    elif sys.platform == "darwin":
+        base = Path.home() / "Library" / "Application Support"
     else:
         base = Path(os.environ.get("XDG_STATE_HOME", Path.home() / ".local" / "state"))
     return base / "SnoopyOS Company" / "ChimpiBridge"

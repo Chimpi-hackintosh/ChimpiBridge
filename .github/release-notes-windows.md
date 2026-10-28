@@ -1,42 +1,40 @@
-# ChimpiBridge 0.1.1 — Windows x64
+# ChimpiBridge 0.1.1 — Windows e macOS
 
-**Autor e mantenedor: [Chimpi-hackintosh](https://github.com/Chimpi-hackintosh)**
+**Autor, mantenedor e publicador: [Chimpi-hackintosh](https://github.com/Chimpi-hackintosh)**
 
-Versão atual do projeto, substituindo a 0.1.0
+## Downloads
 
-Primeira versão do gerenciador Android em Python + PySide6
+| Arquivo | Uso |
+|---|---|
+| ChimpiBridge-0.1.1-windows-x64-portable.zip | Pasta completa com EXE, runtime, bibliotecas e ADB incluído |
+| ChimpiBridge-0.1.1-windows-x64.exe | EXE independente, sem instalar Python; prepara o ADB automaticamente quando necessário |
+| ChimpiBridge-0.1.1-macos-arm64.zip | ChimpiBridge.app para Mac com Apple Silicon |
+| ChimpiBridge-0.1.1-macos-x64.zip | ChimpiBridge.app para Mac com processador Intel |
 
-## Download pronto para usar
+Cada pacote tem seu arquivo SHA-256
+No Windows portátil, extraia e mantenha a pasta inteira
+O EXE independente precisa de internet na primeira preparação automática do ADB quando não há ferramenta disponível
+No macOS, extraia o ZIP e mova ChimpiBridge.app para Aplicativos
+As versões macOS incluem runtime, bibliotecas e ferramentas ADB, exigem macOS 14.4 ou posterior e usam assinatura ad hoc local, sem notarização Apple
 
-Baixe **ChimpiBridge-0.1.1-windows-x64-portable.zip**, extraia a pasta inteira e abra **ChimpiBridge.exe**
-
-O pacote inclui o executável, o runtime Python, as bibliotecas e as ferramentas ADB
-Mantenha as pastas que acompanham o EXE junto dele
-Não é necessário compilar o projeto nem instalar Python para usar este pacote
-
-O setup instalável é preparado separadamente por **Chimpi-hackintosh**, usando a distribuição pronta
-
-## Novo nesta versão
-
-- Preparação automática do ADB no Windows quando ausente, sem abrir console ou PowerShell
-- Download direto do Google, conferência de SHA-256 antes da execução e reutilização no perfil do usuário
-- Botão para repetir a preparação após falha de rede, sem downloads em loop
+O setup instalável do Windows é preparado separadamente por Chimpi-hackintosh
 
 ## Funcionalidades
 
-- Detecção e seleção de aparelhos Android visíveis pelo ADB
-- Reinício normal e entrada no Recovery já instalado no aparelho
-- Acompanhamento de reconexão e confirmação de modo quando o aparelho fornece as informações necessárias
-- Histórico local, exportação de relatório e interface em português e inglês
+- Detectar e selecionar Android por ADB
+- Reiniciar o Android ou entrar no Recovery já instalado
+- Preparar o ADB oficial em segundo plano no Windows quando ele está ausente, conferindo o SHA-256 antes da execução
+- Acompanhar a reconexão e confirmar o modo quando há evidência do mesmo aparelho
+- Interface em português e inglês e histórico local
 
-## Compatibilidade e verificação
+## Verificação
 
-- Windows 10 versão 1809 ou posterior / Windows 11, x64
-- Testes de lógica e interface executados no Windows
-- Executável aberto e renderizado em teste de inicialização no runner Windows
-- Comunicação com celulares físicos ainda depende de teste por USB
-- Depuração USB, autorização no celular e o driver do fabricante podem ser necessários
+Testes de núcleo e interface executados em Windows, macOS Apple Silicon e macOS Intel
+Executáveis compilados abertos e renderizados nos respectivos sistemas
+O app macOS também é extraído do ZIP e aberto novamente para conferir permissões, symlinks e recursos
+O EXE independente do Windows é aberto a partir de outra pasta e testa o download real do ADB no runtime empacotado
 
-Download Mode Samsung, Fastboot/Fastbootd e iPhone permanecem planejados para versões futuras
+A comunicação USB e a troca de modos em aparelhos físicos ainda precisam de validação
+Download Mode, Fastboot e o backend iPhone continuam planejados
 
-O arquivo `.sha256` permite conferir a integridade do ZIP
+Esta Release substitui a publicação automática anterior; o workflow apenas compila, testa e anexa os pacotes ao rascunho do mantenedor

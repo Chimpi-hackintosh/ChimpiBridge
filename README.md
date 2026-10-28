@@ -4,7 +4,7 @@
 
 **Versão atual: [0.1.1](https://github.com/Chimpi-hackintosh/ChimpiBridge/releases/tag/v0.1.1)**
 
-Gerenciador desktop de conexão e modos Android, escrito em **Python + PySide6**
+Gerenciador desktop de conexão e modos Android para **Windows e macOS**, escrito em **Python + PySide6**
 
 **O setup oficial para Windows é preparado e publicado por Chimpi-hackintosh, mantenedor do projeto**
 
@@ -66,9 +66,34 @@ Ela é reutilizada nas próximas aberturas
 Se a internet falhar, o aplicativo mostra o erro e oferece **Preparar ADB** para tentar novamente, sem repetir downloads em loop
 Uma ferramenta escolhida manualmente mantém precedência sobre a preparação automática
 
+## EXE independente para Windows
+
+Como alternativa ao ZIP portátil, baixe **ChimpiBridge-0.1.1-windows-x64.exe** na mesma Release
+Esse arquivo inclui o runtime e a interface e pode ser aberto sozinho, sem instalar Python
+Quando necessário, o ADB é baixado do Google e preparado na pasta de dados do usuário — a primeira preparação exige internet
+O pacote ZIP continua incluindo o ADB para uso sem esse download inicial
+
+## App para macOS
+
+- **ChimpiBridge-0.1.1-macos-arm64.zip** para Apple Silicon
+- **ChimpiBridge-0.1.1-macos-x64.zip** para Intel
+
+Extraia o ZIP e mova **ChimpiBridge.app** para **Aplicativos**
+O app inclui Python, Qt e o ADB; o requisito mínimo é macOS 14.4
+As versões macOS têm assinatura ad hoc local, sem notarização Apple
+Preferências e histórico ficam em `~/Library/Application Support/SnoopyOS Company/ChimpiBridge`
+O suporte atual continua sendo Android por ADB; o backend iPhone permanece planejado
+
+## Publicação em nome do mantenedor
+
+O rascunho da Release é criado pela conta **Chimpi-hackintosh**
+O workflow compila, testa e anexa os arquivos a esse rascunho, sem criar Releases em nome do bot
+A publicação final é feita pela conta do mantenedor
+A publicação automática anterior é preservada como rascunho de backup, com sua revisão e arquivos originais
+
 ## Área do mantenedor
 
-O workflow de publicação gera e verifica o pacote portátil com o EXE no Windows do GitHub
+O workflow gera e verifica ZIP e EXE independente Windows e apps macOS Intel e Apple Silicon nos respectivos sistemas
 **Chimpi-hackintosh cuida da criação e publicação do setup instalável** a partir da pasta pronta
 As instruções abaixo documentam o desenvolvimento e o empacotamento manual, quando necessários
 
@@ -201,6 +226,8 @@ Veja **VALIDACAO.md** para os resultados e as verificações Windows que ainda d
 | `locales/` | Traduções completas pt-BR e inglês |
 | `assets/` | Estilo, ícone vetorial e ícone Windows |
 | `scripts/build_windows.py` | Build e empacotamento Windows |
+| `scripts/build_macos.py` | Build e verificação dos apps macOS |
+| `scripts/release_packages.py` | Anexos no rascunho do mantenedor e preservação da publicação anterior |
 | `installer/ChimpiBridge.nsi` | Instalador NSIS |
 | `tests/` | Testes de núcleo e interface |
 

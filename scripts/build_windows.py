@@ -20,7 +20,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
-from chimpibridge import __version__
+from chimpibridge import __author__, __version__
 
 
 def nsis_escape(text: str) -> str:
@@ -74,6 +74,7 @@ def build(argv=None) -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--platform-tools", type=Path, default=ROOT / "tools" / "platform-tools")
     parser.add_argument("--portable-only", action="store_true")
+    parser.add_argument("--standalone", action="store_true", help="Also build a self-contained one-file EXE")
     args = parser.parse_args(argv)
     if sys.platform != "win32" or struct.calcsize("P") != 8 or platform.machine().upper() not in {"AMD64", "X86_64"}:
         parser.error("Build on Windows x64 using Python x64 / Execute no Windows x64 com Python x64")
@@ -92,9 +93,22 @@ def build(argv=None) -> int:
     build_dir, release_dir = ROOT / "build", ROOT / "release"
     build_dir.mkdir(exist_ok=True)
     release_dir.mkdir(exist_ok=True)
+    from PyInstaller.utils.win32.versioninfo import (VSVersionInfo, FixedFileInfo, StringFileInfo,
+                                                   StringTable, StringStruct, VarFileInfo, VarStruct)
+    numeric_version = (*map(int, __version__.split(".")), 0)
+    resource = VSVersionInfo(ffi=FixedFileInfo(filevers=numeric_version, prodvers=numeric_version,
+                                             fileType=1, OS=0x40004), kids=[
+        StringFileInfo([StringTable("040904B0", [StringStruct(key, value) for key, value in {
+            "CompanyName": __author__, "FileDescription": "ChimpiBridge",
+            "FileVersion": __version__, "ProductVersion": __version__, "ProductName": "ChimpiBridge",
+            "LegalCopyright": f"Copyright (c) 2026 {__author__}", "OriginalFilename": "ChimpiBridge.exe"
+        }.items()])]), VarFileInfo([VarStruct("Translation", [1033, 1200])])])
+    version_file = build_dir / "windows-version.txt"
+    version_file.write_text(str(resource), encoding="utf-8")
     subprocess.run([sys.executable, "-m", "PyInstaller", "--noconfirm", "--clean", "--onedir",
                     "--windowed", "--contents-directory", "lib", "--name", "ChimpiBridge",
                     "--hidden-import", "PySide6.QtSvg",
+                    "--version-file", str(version_file),
                     "--icon", str(ROOT / "assets" / "mark.ico"), "--distpath", str(ROOT / "dist"),
                     "--workpath", str(build_dir / "pyinstaller"), "--specpath", str(build_dir),
                     str(ROOT / "main.py")], cwd=ROOT, check=True)
@@ -110,13 +124,31 @@ def build(argv=None) -> int:
     exposed = [str(p.relative_to(staging)) for p in staging.rglob("*") if p.suffix.lower() in {".py", ".pyw"}]
     if exposed:
         raise RuntimeError("Python source files in distribution: " + ", ".join(exposed))
-    info = {"version": __version__, "built_at": datetime.now(timezone.utc).isoformat(),
+    info = {"version": __version__, "author": __author__, "source_commit": os.environ.get("GITHUB_SHA", ""),
+            "built_at": datetime.now(timezone.utc).isoformat(),
             "python": platform.python_version(), "target": "windows-x64",
             "packages": {name: metadata.version(name) for name in ("PySide6_Essentials", "shiboken6", "PyInstaller")},
             "adb_sha256": hashlib.sha256((tools / "adb.exe").read_bytes()).hexdigest()}
     (staging / "build-info.json").write_text(json.dumps(info, indent=2), encoding="utf-8")
     archive = release_dir / f"ChimpiBridge-{__version__}-windows-x64-portable"
     shutil.make_archive(str(archive), "zip", root_dir=staging.parent, base_dir=staging.name)
+    if args.standalone:
+        command = [sys.executable, "-m", "PyInstaller", "--noconfirm", "--clean", "--onefile",
+                   "--windowed", "--name", "ChimpiBridge", "--hidden-import", "PySide6.QtSvg",
+                   "--version-file", str(version_file),
+                   "--icon", str(ROOT / "assets" / "mark.ico"),
+                   "--distpath", str(ROOT / "dist" / "standalone"),
+                   "--workpath", str(build_dir / "pyinstaller-onefile"), "--specpath", str(build_dir)]
+        for folder in ("assets", "locales", "licenses"):
+            command.extend(["--add-data", f"{staging / folder}:{folder}"])
+        for name in ("settings.default.json", "README.txt", "THIRD_PARTY_NOTICES.md", "LICENSE", "build-info.json"):
+            command.extend(["--add-data", f"{staging / name}:."])
+        # ADB uses the persistent, verified download cache so its server does not
+        # keep the one-file application's temporary extraction folder locked.
+        subprocess.run([*command, str(ROOT / "main.py")], cwd=ROOT, check=True)
+        single_exe = release_dir / f"ChimpiBridge-{__version__}-windows-x64.exe"
+        shutil.copy2(ROOT / "dist" / "standalone" / "ChimpiBridge.exe", single_exe)
+        print(single_exe)
     if nsis:
         manifest = build_dir / "uninstall-files.nsh"
         uninstall_manifest(staging, manifest)

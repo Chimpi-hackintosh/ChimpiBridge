@@ -625,6 +625,7 @@ def main() -> int:
     import tempfile
     parser = argparse.ArgumentParser(add_help=False)
     parser.add_argument("--smoke-test", type=Path)
+    parser.add_argument("--smoke-download-adb", action="store_true")
     options, qt_args = parser.parse_known_args(sys.argv[1:])
     temporary = None
     if options.smoke_test:
@@ -646,9 +647,12 @@ def main() -> int:
                 icon = window.windowIcon().pixmap(QSize(48, 48))
                 if image.isNull() or icon.isNull():
                     raise RuntimeError("Window or SVG icon could not be rendered")
-                adb = resolve_adb("", app_root())
+                adb = (install_platform_tools(window.store.root) if options.smoke_download_adb
+                       else resolve_adb("", app_root()))
+                AdbClient(adb).version()
                 result.update(status="ok", window_rendered=True, icon_rendered=True,
-                              adb_bundled=adb.is_file(), language=window.tr.language)
+                              adb_available=adb.is_file(), adb_bundled=not options.smoke_download_adb,
+                              adb_downloaded=options.smoke_download_adb, language=window.tr.language)
                 code = 0
             except Exception as exc:
                 result["error"] = str(exc)
