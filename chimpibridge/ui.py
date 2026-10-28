@@ -43,7 +43,7 @@ class Task(QRunnable):
 
 
 class Window(QMainWindow):
-    def __init__(self, store: Store | None = None, client_factory=AdbClient):
+    def __init__(self, store: Store | None = None, client_factory=AdbClient, *, auto_scan: bool = True):
         super().__init__()
         self.root = app_root()
         self.store = store or Store()
@@ -68,8 +68,9 @@ class Window(QMainWindow):
         self.timer = QTimer(self)
         self.timer.setInterval(2500)
         self.timer.timeout.connect(self.refresh)
-        self.timer.start()
-        QTimer.singleShot(0, self.refresh)
+        if auto_scan:
+            self.timer.start()
+            QTimer.singleShot(0, self.refresh)
 
     def label(self, key: str, *, muted=False, eyebrow=False) -> QLabel:
         label = QLabel()
@@ -583,10 +584,50 @@ class Window(QMainWindow):
 
 
 def main() -> int:
-    application = QApplication(sys.argv)
+    # A build-only startup probe verifies the frozen EXE without touching USB.
+    import argparse
+    import json
+    import os
+    import tempfile
+    parser = argparse.ArgumentParser(add_help=False)
+    parser.add_argument("--smoke-test", type=Path)
+    options, qt_args = parser.parse_known_args(sys.argv[1:])
+    temporary = None
+    if options.smoke_test:
+        os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
+        temporary = tempfile.TemporaryDirectory(prefix="chimpibridge-startup-")
+    application = QApplication([sys.argv[0], *qt_args])
     application.setApplicationName("ChimpiBridge")
     application.setOrganizationName("SnoopyOS Company")
     application.setApplicationVersion(__version__)
-    window = Window()
+    window = Window(Store(Path(temporary.name)) if temporary else None,
+                    auto_scan=not bool(options.smoke_test))
     window.show()
-    return application.exec()
+    if options.smoke_test:
+        def finish_probe():
+            result = {"status": "error", "version": __version__}
+            code = 1
+            try:
+                image = window.grab()
+                icon = window.windowIcon().pixmap(QSize(48, 48))
+                if image.isNull() or icon.isNull():
+                    raise RuntimeError("Window or SVG icon could not be rendered")
+                adb = resolve_adb("", app_root())
+                result.update(status="ok", window_rendered=True, icon_rendered=True,
+                              adb_bundled=adb.is_file(), language=window.tr.language)
+                code = 0
+            except Exception as exc:
+                result["error"] = str(exc)
+            try:
+                options.smoke_test.parent.mkdir(parents=True, exist_ok=True)
+                options.smoke_test.write_text(json.dumps(result, indent=2), encoding="utf-8")
+            except OSError:
+                code = 1
+            window.close()
+            application.exit(code)
+        QTimer.singleShot(500, finish_probe)
+    try:
+        return application.exec()
+    finally:
+        if temporary:
+            temporary.cleanup()
