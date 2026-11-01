@@ -40,3 +40,7 @@ O catálogo público não inclui repositórios privados
 Os testes do aviso cobrem versões iguais e mais novas sem alerta, versões antigas com alerta, mudança exata de data, traduções, falha de rede e rejeição de links não oficiais
 
 `CHIMPI_SUPPORT_CHECK=0` desliga a consulta opcional — os modos de smoke test também evitam rede e avisos durante a compilação
+
+## Ajustes encontrados no CI
+
+A primeira execução no Ubuntu encontrou libEGL.so.1 ausente — o workflow agora instala as bibliotecas Qt antes da suíte de interface
