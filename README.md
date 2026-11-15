@@ -244,3 +244,7 @@ Veja **VALIDACAO.md** para os resultados e as verificações Windows que ainda d
 
 O código do projeto usa a licença MIT presente em **LICENSE**
 Os avisos dos componentes externos estão em **THIRD_PARTY_NOTICES.md**
+
+## Aviso de suporte
+
+Aviso traduzido, data de 04/11/2026, versões e limites de distribuição em [SUPPORT.md](SUPPORT.md)

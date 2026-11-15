@@ -12,6 +12,7 @@ from PySide6.QtWidgets import (QApplication, QComboBox, QFileDialog, QFrame, QHB
     QLabel, QLineEdit, QListWidget, QListWidgetItem, QMainWindow, QPlainTextEdit,
     QProgressBar, QPushButton, QScrollArea, QSizePolicy, QStackedWidget, QVBoxLayout, QWidget)
 
+from support_notice import attach_qt
 from . import __version__
 from .adb import AdbClient, BridgeError, Device, Target, Transition, resolve_adb
 from .i18n import I18n
@@ -638,6 +639,8 @@ def main() -> int:
     window = Window(Store(Path(temporary.name)) if temporary else None,
                     auto_scan=not bool(options.smoke_test))
     window.show()
+    if not options.smoke_test:
+        attach_qt(window, "ChimpiBridge", __version__)
     if options.smoke_test:
         def finish_probe():
             result = {"status": "error", "version": __version__}
